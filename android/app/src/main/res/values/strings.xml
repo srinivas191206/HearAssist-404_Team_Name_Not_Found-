@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HearAssist</string>
+    <string name="title_activity_main">HearAssist</string>
+    <string name="package_name">com.aitam.hearassist</string>
+    <string name="custom_url_scheme">com.aitam.hearassist</string>
+</resources>
