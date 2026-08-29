@@ -110,8 +110,20 @@ class SpeechService implements SpeechRecognitionEngine {
       }
     };
 
-    // PROVEN STANDARD WEB SPEECH API STT PARSER WITH SILENCE COMMIT TIMEOUT
+    // PROVEN ACCURATE WEB SPEECH API STT PARSER WITH CLEAN PHRASE DEDUPLICATION
     let silenceTimer: any = null;
+
+    const deduplicateText = (str: string): string => {
+      const words = str.trim().split(/\s+/);
+      if (words.length <= 1) return str.trim();
+      const result: string[] = [];
+      for (let idx = 0; idx < words.length; idx++) {
+        if (idx === 0 || words[idx].toLowerCase() !== words[idx - 1].toLowerCase()) {
+          result.push(words[idx]);
+        }
+      }
+      return result.join(' ');
+    };
 
     this.recognition.onresult = (event: any) => {
       if (!event.results) return;
@@ -119,21 +131,26 @@ class SpeechService implements SpeechRecognitionEngine {
       let interimTranscript = '';
       let finalTranscript = '';
 
-      for (let i = 0; i < event.results.length; ++i) {
+      const startIndex = typeof event.resultIndex === 'number' && event.resultIndex >= 0 ? event.resultIndex : 0;
+
+      for (let i = startIndex; i < event.results.length; ++i) {
         const item = event.results[i];
         if (!item || !item[0]) continue;
+        const textChunk = item[0].transcript;
         if (item.isFinal) {
-          finalTranscript += item[0].transcript + ' ';
+          finalTranscript += textChunk + ' ';
         } else {
-          interimTranscript += item[0].transcript + ' ';
+          interimTranscript += textChunk + ' ';
         }
       }
 
       if (interimTranscript.trim()) {
-        const partialStr = interimTranscript.trim();
-        if (this.onPartialCb) this.onPartialCb(partialStr);
+        const partialStr = deduplicateText(interimTranscript);
+        if (this.onPartialCb && partialStr) {
+          this.onPartialCb(partialStr);
+        }
 
-        // SILENCE COMMIT TIMER (1200ms of no new speech commits sentence in-place)
+        // SILENCE COMMIT TIMER (1200ms of no new speech commits sentence cleanly)
         if (silenceTimer) clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
           if (this.onFinalCb && partialStr) {
@@ -146,10 +163,12 @@ class SpeechService implements SpeechRecognitionEngine {
 
       if (finalTranscript.trim()) {
         if (silenceTimer) clearTimeout(silenceTimer);
-        const cleanText = finalTranscript.trim();
-        const sha256Hash = computeSha256Sync(cleanText);
-        this.lastFinalText = cleanText;
-        if (this.onFinalCb) this.onFinalCb(cleanText, sha256Hash);
+        const cleanText = deduplicateText(finalTranscript);
+        if (cleanText) {
+          const sha256Hash = computeSha256Sync(cleanText);
+          this.lastFinalText = cleanText;
+          if (this.onFinalCb) this.onFinalCb(cleanText, sha256Hash);
+        }
       }
     };
   }
