@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { User, UserPlus, ArrowRight, ShieldAlert, MessageSquare, BookOpen, Radio, MapPin, Zap } from 'lucide-react';
+import { User, UserPlus, ArrowRight, ArrowLeft, Radio, MapPin, Zap } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import type { EmergencyContact } from '../../types';
 
 export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const { updateUserProfile, updateContacts } = useApp();
-  const [step, setStep] = useState<0 | 1 | 2 | 3>(0); // 0 = Splash Screen
+  const [step, setStep] = useState<0 | 1 | 2>(0); // 0 = Splash Screen, 1 = Stay Aware & Safe, 2 = Profile & Emergency Setup
 
-  // Interactive Card Selection State
-  const [activeFeature, setActiveFeature] = useState<number>(0);
-
-  // Step 3 Profile & Mandatory Contact Form State
+  // Step 2 Profile & Mandatory Contact Form State
   const [userName, setUserName] = useState('');
   const [userPhone, setUserPhone] = useState('');
   const [contactName, setContactName] = useState('');
@@ -30,7 +27,11 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
 
   const handleNext = () => {
     if (step === 1) setStep(2);
-    else if (step === 2) setStep(3);
+  };
+
+  const handleBack = () => {
+    if (step === 2) setStep(1);
+    else if (step === 1) setStep(0);
   };
 
   const handleFinishSetup = (e: React.FormEvent) => {
@@ -65,7 +66,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     onComplete();
   };
 
-  // SCREEN 1: HACKSPRINT 2.0 / AITAM OFFICIAL SPLASH SCREEN (3.6s SMOOTH LOADING)
+  // SCREEN 0: HACKSPRINT 2.0 / AITAM OFFICIAL SPLASH SCREEN (3.6s SMOOTH LOADING)
   if (step === 0) {
     return (
       <div
@@ -157,7 +158,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     );
   }
 
-  // SCREEN 2: ONBOARDING INTRO 1 (STRUCTURED & INTERACTIVE)
+  // SCREEN 1: ONBOARDING PAGE 1 (STAY AWARE • STAY SAFE WITH BACKTRACKING)
   if (step === 1) {
     return (
       <div
@@ -168,149 +169,37 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '3.25rem 1.5rem 2.25rem 1.5rem',
+          padding: '2.25rem 1.5rem 2rem 1.5rem',
           boxSizing: 'border-box',
         }}
       >
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e6f4f1', color: '#00897b', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
-            ✨ ASSISTIVE ECOSYSTEM
-          </div>
-          <h2 style={{ fontSize: '2.1rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
-            Your <span style={{ color: '#00897b' }}>Safety</span>.<br />
-            Your <span style={{ color: '#00897b' }}>Communication</span>.<br />
-            Your <span style={{ color: '#00897b' }}>Learning</span>.
-          </h2>
-          <p style={{ fontSize: '0.925rem', color: '#64748b', marginTop: '0.65rem', fontWeight: 500, lineHeight: 1.5 }}>
-            An all-in-one smart mobile platform for people with hearing impairment.
-          </p>
-        </div>
+          {/* TOP BACKTRACKER BUTTON & BADGE */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+            <button
+              onClick={handleBack}
+              aria-label="Back to Splash"
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '8px',
+                cursor: 'pointer',
+                color: '#0f172a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                backgroundColor: '#f1f5f9',
+              }}
+            >
+              <ArrowLeft size={20} />
+            </button>
 
-        {/* INTERACTIVE 3 FEATURE CARDS (STRUCTURED & TAP-TO-EXPLORE) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: 'auto 0' }}>
-          <div
-            onClick={() => setActiveFeature(0)}
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '18px',
-              border: activeFeature === 0 ? '2px solid #00897b' : '1px solid #e2e8f0',
-              backgroundColor: activeFeature === 0 ? '#f0fdf4' : '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.85rem',
-              cursor: 'pointer',
-              boxShadow: activeFeature === 0 ? '0 4px 15px rgba(0, 137, 123, 0.12)' : 'none',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: activeFeature === 0 ? '#00897b' : '#f1f5f9', color: activeFeature === 0 ? '#ffffff' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShieldAlert size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>Emergency Safety Net</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>Background fall detection & instant SMS dispatch</div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#fee2e2', color: '#ef4444', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              🚨 REAL-TIME PROTECTION
             </div>
           </div>
 
-          <div
-            onClick={() => setActiveFeature(1)}
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '18px',
-              border: activeFeature === 1 ? '2px solid #00897b' : '1px solid #e2e8f0',
-              backgroundColor: activeFeature === 1 ? '#f0fdf4' : '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.85rem',
-              cursor: 'pointer',
-              boxShadow: activeFeature === 1 ? '0 4px 15px rgba(0, 137, 123, 0.12)' : 'none',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: activeFeature === 1 ? '#00897b' : '#f1f5f9', color: activeFeature === 1 ? '#ffffff' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MessageSquare size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>Live Conversation Chat</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>Continuous live speech-to-text & loud speaker TTS</div>
-            </div>
-          </div>
-
-          <div
-            onClick={() => setActiveFeature(2)}
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '18px',
-              border: activeFeature === 2 ? '2px solid #00897b' : '1px solid #e2e8f0',
-              backgroundColor: activeFeature === 2 ? '#f0fdf4' : '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.85rem',
-              cursor: 'pointer',
-              boxShadow: activeFeature === 2 ? '0 4px 15px rgba(0, 137, 123, 0.12)' : 'none',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: activeFeature === 2 ? '#00897b' : '#f1f5f9', color: activeFeature === 2 ? '#ffffff' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BookOpen size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>ASL & ISL Learning Hub</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>Sign videos, interactive quizzes & AI assistant</div>
-            </div>
-          </div>
-        </div>
-
-        {/* BOTTOM NAVIGATION BAR */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
-          </div>
-
-          <button
-            className="btn"
-            onClick={handleNext}
-            style={{
-              backgroundColor: '#00897b',
-              color: '#ffffff',
-              padding: '0.85rem 2rem',
-              borderRadius: '16px',
-              fontWeight: 800,
-              fontSize: '0.95rem',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 6px 20px rgba(0, 137, 123, 0.25)',
-              letterSpacing: '0.02em',
-            }}
-          >
-            NEXT
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // SCREEN 3: ONBOARDING INTRO 2 (STRUCTURED AWARENESS & SAFETY)
-  if (step === 2) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '100vh',
-          backgroundColor: '#ffffff',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '3.25rem 1.5rem 2.25rem 1.5rem',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#fee2e2', color: '#ef4444', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
-            🚨 REAL-TIME PROTECTION
-          </div>
           <h2 style={{ fontSize: '2.2rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
             Stay <span style={{ color: '#00897b' }}>Aware</span>.<br />
             Stay <span style={{ color: '#00897b' }}>Safe</span>.
@@ -320,35 +209,35 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
           </p>
         </div>
 
-        {/* STRUCTURED INTERACTIVE PROTECTION HIGHLIGHTS */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: 'auto 0' }}>
-          <div style={{ padding: '0.85rem 1rem', borderRadius: '18px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Radio size={22} />
+        {/* STRUCTURED PROTECTION HIGHLIGHTS */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', margin: 'auto 0' }}>
+          <div style={{ padding: '0.95rem 1.1rem', borderRadius: '18px', border: '1.5px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.95rem', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Radio size={24} />
             </div>
             <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>Environmental Sound AI</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>Detects sirens, horns, doorbells & alarms instantly</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Environmental Sound AI</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>Detects sirens, horns, doorbells & alarms instantly</div>
             </div>
           </div>
 
-          <div style={{ padding: '0.85rem 1rem', borderRadius: '18px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MapPin size={22} />
+          <div style={{ padding: '0.95rem 1.1rem', borderRadius: '18px', border: '1.5px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.95rem', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <MapPin size={24} />
             </div>
             <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>Live GPS SMS Dispatch</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>Shares Google Maps live coordinates with emergency contacts</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Live GPS SMS Dispatch</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>Shares Google Maps live coordinates with emergency contacts</div>
             </div>
           </div>
 
-          <div style={{ padding: '0.85rem 1rem', borderRadius: '18px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={22} />
+          <div style={{ padding: '0.95rem 1.1rem', borderRadius: '18px', border: '1.5px solid #e2e8f0', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.95rem', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Zap size={24} />
             </div>
             <div>
-              <div style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0f172a' }}>Multi-Burst Haptic Alerts</div>
-              <div style={{ fontSize: '0.775rem', color: '#64748b', marginTop: '1px' }}>High-intensity tactile vibration patterns for deaf users</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Multi-Burst Haptic Alerts</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>High-intensity tactile vibration patterns for deaf users</div>
             </div>
           </div>
         </div>
@@ -356,7 +245,6 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
         {/* BOTTOM NAVIGATION BAR */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
             <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
           </div>
@@ -367,7 +255,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
             style={{
               backgroundColor: '#00897b',
               color: '#ffffff',
-              padding: '0.85rem 1.65rem',
+              padding: '0.85rem 1.75rem',
               borderRadius: '16px',
               fontWeight: 800,
               fontSize: '0.95rem',
@@ -386,7 +274,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     );
   }
 
-  // SCREEN 4: STRUCTURED USER PROFILE & EMERGENCY CONTACT SETUP FORM
+  // SCREEN 2: ONBOARDING PAGE 2 (PROFILE & EMERGENCY CONTACT SETUP WITH BACKTRACKING)
   return (
     <div
       style={{
@@ -396,15 +284,38 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '2.5rem 1.5rem 1.75rem 1.5rem',
+        padding: '2.25rem 1.5rem 1.75rem 1.5rem',
         boxSizing: 'border-box',
         overflowY: 'auto',
       }}
     >
       <div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e6f4f1', color: '#00897b', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
-          👤 QUICK PROFILE SETUP
+        {/* TOP BACKTRACKER BUTTON & BADGE */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <button
+            onClick={handleBack}
+            aria-label="Back to Stay Aware"
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px',
+              cursor: 'pointer',
+              color: '#0f172a',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              backgroundColor: '#f1f5f9',
+            }}
+          >
+            <ArrowLeft size={20} />
+          </button>
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e6f4f1', color: '#00897b', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            👤 QUICK PROFILE SETUP
+          </div>
         </div>
+
         <h2 style={{ fontSize: '1.8rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
           Profile & <span style={{ color: '#00897b' }}>Emergency Contact</span>
         </h2>
@@ -501,7 +412,6 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '0.35rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
             <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
           </div>
