@@ -8,20 +8,20 @@ class SensorService {
   private lastImpactTime = 0;
 
   // Thresholds based on sensitivity settings
-  private accelThreshold = 25.0; // m/s^2 acceleration magnitude
+  private accelThreshold = 15.0; // m/s^2 acceleration magnitude for shake detection
   private isBarometerAvailable = false;
 
   public setSensitivity(sensitivity: 'low' | 'medium' | 'high') {
     switch (sensitivity) {
       case 'low':
-        this.accelThreshold = 32.0;
+        this.accelThreshold = 22.0;
         break;
       case 'high':
-        this.accelThreshold = 18.0;
+        this.accelThreshold = 12.0;
         break;
       case 'medium':
       default:
-        this.accelThreshold = 25.0;
+        this.accelThreshold = 15.0;
         break;
     }
   }

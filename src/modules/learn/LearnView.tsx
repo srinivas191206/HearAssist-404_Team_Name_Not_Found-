@@ -69,7 +69,7 @@ export const LearnView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', position: 'relative' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingBottom: '90px', boxSizing: 'border-box' }}>
       {/* 1. HEADER WITH BACK TRACKING & LOGOO.PNG */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>

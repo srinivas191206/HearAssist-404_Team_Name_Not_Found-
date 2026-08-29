@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Shield, ShieldCheck, Wifi, MapPin, Mic, BatteryCharging, Clock, Users, ChevronRight, PhoneCall, Activity } from 'lucide-react';
+import { ArrowLeft, Shield, ShieldCheck, Wifi, MapPin, Mic, BatteryCharging, Clock, Users, ChevronRight, PhoneCall } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ContactsConfig } from './ContactsConfig';
-import { sensorService } from '../../services/sensorService';
 import { Modal } from '../../components/common/Modal';
 
 export const SafetyView: React.FC = () => {
@@ -10,10 +9,6 @@ export const SafetyView: React.FC = () => {
 
   const [isSystemArmed, setIsSystemArmed] = useState(true);
   const [activeModal, setActiveModal] = useState<'contacts' | 'history' | null>(null);
-
-  const handleSimulateImpact = () => {
-    sensorService.simulateImpact(29.8);
-  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
@@ -332,17 +327,6 @@ export const SafetyView: React.FC = () => {
             </a>
           ))}
         </div>
-      </div>
-
-      {/* SENSOR IMPACT SIMULATION BUTTON (DEMO ONLY) */}
-      <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-        <button
-          className="btn btn-secondary"
-          onClick={handleSimulateImpact}
-          style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
-        >
-          <Activity size={14} className="text-teal" /> Simulate Fall Impact (Hackathon Demo Trigger)
-        </button>
       </div>
 
       {/* EMERGENCY CONTACTS MODAL */}
