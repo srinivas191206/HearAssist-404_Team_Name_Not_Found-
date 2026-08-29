@@ -15,11 +15,6 @@ export const SafetyView: React.FC = () => {
     sensorService.simulateImpact(29.8);
   };
 
-  const latStr = '18.5658159';
-  const lngStr = '84.1965129';
-  const altStr = '45m';
-  const mapsUrlStr = `https://www.google.com/maps?q=${latStr},${lngStr}`;
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
       {/* 1. TOP HEADER WITH BACK TRACKING & LOGOO.PNG */}
@@ -93,87 +88,54 @@ export const SafetyView: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. LIVE GPS LOCATION COORDINATES DISPLAY CARD */}
-      <div
-        className="card"
-        style={{
-          padding: '0.95rem 1.1rem',
-          borderRadius: '18px',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.6rem',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#15803d' }}>
-            <MapPin size={18} />
-            <span style={{ fontSize: '0.85rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Live GPS Coordinates
-            </span>
-          </div>
-          <span style={{ backgroundColor: '#dcfce7', color: '#166534', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '12px' }}>
-            ● LIVE GPS ACTIVE
-          </span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.4rem', backgroundColor: '#ffffff', padding: '0.65rem 0.75rem', borderRadius: '12px', border: '1px solid #dcfce7' }}>
-          <div>
-            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Latitude</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#14532d', fontFamily: 'monospace' }}>
-              {latStr}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Longitude</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#14532d', fontFamily: 'monospace' }}>
-              {lngStr}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Altitude</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#14532d', fontFamily: 'monospace' }}>
-              {altStr}
-            </div>
-          </div>
-        </div>
-
-        <a
-          href={mapsUrlStr}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            color: '#15803d',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            textDecoration: 'none',
-            wordBreak: 'break-all',
-          }}
-        >
-          📍 Maps Link: {mapsUrlStr}
-        </a>
-      </div>
-
-      {/* 4. CENTRAL RED SOS BUTTON HERO WITH PULSE RINGS */}
+      {/* 3. CENTRAL RED SOS BUTTON HERO WITH INTERACTIVE ROTATING & PULSING RADAR RINGS */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '1.25rem 0',
+          padding: '2.5rem 0',
           position: 'relative',
         }}
       >
-        {/* Pulse Ring 1 */}
-        <div style={{ width: '220px', height: '220px', borderRadius: '50%', border: '1px solid rgba(239, 68, 68, 0.15)', position: 'absolute', animation: 'pulse 2s infinite' }} />
-        {/* Pulse Ring 2 */}
-        <div style={{ width: '180px', height: '180px', borderRadius: '50%', border: '1.5px solid rgba(239, 68, 68, 0.25)', position: 'absolute' }} />
+        {/* Interactive Rotating Outer Loading Orbit Ring */}
+        <div
+          style={{
+            width: '240px',
+            height: '240px',
+            borderRadius: '50%',
+            border: '3px dashed rgba(239, 68, 68, 0.4)',
+            position: 'absolute',
+            animation: 'spin 10s linear infinite',
+            boxShadow: '0 0 25px rgba(239, 68, 68, 0.15)',
+          }}
+        />
+
+        {/* Pulse Radar Ring 1 */}
+        <div
+          style={{
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            border: '2px solid rgba(239, 68, 68, 0.35)',
+            position: 'absolute',
+            animation: 'ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+          }}
+        />
+
+        {/* Pulse Radar Ring 2 */}
+        <div
+          style={{
+            width: '165px',
+            height: '165px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+            border: '1.5px solid rgba(239, 68, 68, 0.25)',
+            position: 'absolute',
+            animation: 'pulse 1.8s ease-in-out infinite',
+          }}
+        />
 
         {/* GLOWING RED SOS BUTTON */}
         <button

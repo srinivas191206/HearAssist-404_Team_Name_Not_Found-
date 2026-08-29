@@ -56,7 +56,6 @@ export function computeSha256Sync(ascii: string): string {
     hash = hash.slice(0, 8);
 
     for (i = 0; i < 64; i++) {
-      const i2 = i + j;
       const w15 = w[i - 15],
         w2 = w[i - 2];
 

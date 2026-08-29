@@ -62,32 +62,94 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
   };
 
   // SCREEN 1: SPLASH SCREEN (OPENING LOGO DISPLAY)
+  // SCREEN 1: HACKSPRINT 2.0 / AITAM OFFICIAL SPLASH SCREEN (IMAGE TOP, INTERACTIVE LOADING BOTTOM)
   if (step === 0) {
     return (
-      <div className="onboarding-container" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '2rem 1.5rem' }}>
-        <div className="splash-wave-bg" />
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '2.5rem 1.5rem 3rem 1.5rem',
+          boxSizing: 'border-box',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* TOP / CENTER: AITAM HACKSPRINT 2.0 LOGO & BANNER */}
         <div
           style={{
-            width: '180px',
-            height: '180px',
-            borderRadius: '24px',
-            backgroundColor: '#ffffff',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: '1.5rem',
-            boxShadow: '0 12px 36px rgba(0, 137, 123, 0.18)',
-            padding: '1rem',
+            flex: 1,
+            width: '100%',
+            maxWidth: '380px',
           }}
         >
-          <img src="/logo.png" alt="HearAssist Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <img
+            src="/splash_hacksprint.png"
+            alt="AITAM HackSprint 2.0 Hackathon 2026"
+            style={{
+              width: '100%',
+              maxHeight: '65vh',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.06))',
+            }}
+          />
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--teal-700)', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
-          HearAssist
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          STAY AWARE • STAY SAFE • STAY CONNECTED
-        </p>
+
+        {/* BOTTOM: INTERACTIVE ANIMATED LOADING BAR */}
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '320px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.85rem',
+          }}
+        >
+          {/* Animated Gradient Progress Capsule */}
+          <div
+            style={{
+              width: '100%',
+              height: '16px',
+              borderRadius: '20px',
+              backgroundColor: '#1e293b',
+              padding: '3px',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.5)',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                borderRadius: '16px',
+                background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%)',
+                width: '100%',
+                boxShadow: '0 0 12px rgba(245, 158, 11, 0.8)',
+              }}
+            />
+          </div>
+
+          <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1e293b', letterSpacing: '-0.01em' }}>
+            Loading Innovation...
+          </div>
+
+          {/* Glowing Animated Loading Dots */}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#1e293b' }} />
+          </div>
+        </div>
       </div>
     );
   }

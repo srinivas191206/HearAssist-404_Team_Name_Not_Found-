@@ -19,20 +19,17 @@ export const AwarenessView: React.FC = () => {
   const [callsAlertsActive, setCallsAlertsActive] = useState(true);
   const [remindersActive, setRemindersActive] = useState(true);
 
-  // Live Microphone Decibel Volume Meter & Debug Diagnostics
+  // Live Microphone Decibel Volume Meter (0-100%)
   const [liveVolume, setLiveVolume] = useState(0);
-  const [debugMetrics, setDebugMetrics] = useState(soundClassifier.getDebugStatus());
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isSoundMonitoringActive) {
       interval = setInterval(() => {
         setLiveVolume(soundClassifier.getLiveVolume());
-        setDebugMetrics(soundClassifier.getDebugStatus());
       }, 100);
     } else {
       setLiveVolume(0);
-      setDebugMetrics(soundClassifier.getDebugStatus());
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -248,85 +245,6 @@ export const AwarenessView: React.FC = () => {
               {currentLatestAlert ? currentLatestAlert.description : 'Your device continuously analyzes environmental sound frequencies.'}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* DEVELOPER / HACKATHON DIAGNOSTICS & TEST MODE CARD */}
-      <div
-        className="card"
-        style={{
-          padding: '0.85rem 1rem',
-          borderRadius: '16px',
-          backgroundColor: '#0f172a',
-          color: '#f8fafc',
-          border: '1px solid #334155',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#38bdf8', letterSpacing: '0.05em' }}>
-            🛠️ DIAGNOSTICS & YAMNET PIPELINE
-          </span>
-          <span style={{ fontSize: '0.68rem', color: debugMetrics.isConfirmed ? '#4ade80' : '#cbd5e1', fontWeight: 800 }}>
-            {debugMetrics.statusText}
-          </span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.4rem', textAlign: 'center', fontSize: '0.725rem' }}>
-          <div style={{ backgroundColor: '#1e293b', padding: '0.4rem', borderRadius: '8px' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.625rem' }}>CANDIDATE</div>
-            <div style={{ fontWeight: 800, color: '#f8fafc', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {debugMetrics.candidateSound.replace(/DETECTED|🚨|🚗|🔔|🚪|⚡/g, '').trim() || 'NONE'}
-            </div>
-          </div>
-
-          <div style={{ backgroundColor: '#1e293b', padding: '0.4rem', borderRadius: '8px' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.625rem' }}>CONFIDENCE</div>
-            <div style={{ fontWeight: 800, color: debugMetrics.confidence >= 0.70 ? '#4ade80' : '#f8fafc' }}>
-              {(debugMetrics.confidence * 100).toFixed(0)}%
-            </div>
-          </div>
-
-          <div style={{ backgroundColor: '#1e293b', padding: '0.4rem', borderRadius: '8px' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.625rem' }}>ENERGY (RMS)</div>
-            <div style={{ fontWeight: 800, color: debugMetrics.audioEnergyRMS >= 12 ? '#38bdf8' : '#f8fafc' }}>
-              {debugMetrics.audioEnergyRMS}
-            </div>
-          </div>
-
-          <div style={{ backgroundColor: '#1e293b', padding: '0.4rem', borderRadius: '8px' }}>
-            <div style={{ color: '#94a3b8', fontSize: '0.625rem' }}>TEMPORAL</div>
-            <div style={{ fontWeight: 800, color: debugMetrics.temporalCount >= debugMetrics.requiredTemporal ? '#4ade80' : '#f8fafc' }}>
-              {debugMetrics.temporalCount} / {debugMetrics.requiredTemporal}
-            </div>
-          </div>
-        </div>
-
-        {/* TEST SOUND SIMULATION BUTTONS */}
-        <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.6rem', overflowX: 'auto', paddingBottom: '0.2rem' }}>
-          <button
-            onClick={() => soundClassifier.simulateAlert('horn')}
-            style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.25rem 0.5rem', borderRadius: '6px', backgroundColor: '#334155', color: '#ffffff', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            🚗 Test Horn
-          </button>
-          <button
-            onClick={() => soundClassifier.simulateAlert('siren')}
-            style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.25rem 0.5rem', borderRadius: '6px', backgroundColor: '#334155', color: '#ffffff', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            🚨 Test Siren
-          </button>
-          <button
-            onClick={() => soundClassifier.simulateAlert('doorbell')}
-            style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.25rem 0.5rem', borderRadius: '6px', backgroundColor: '#334155', color: '#ffffff', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            🔔 Test Doorbell
-          </button>
-          <button
-            onClick={() => soundClassifier.simulateAlert('knock')}
-            style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.25rem 0.5rem', borderRadius: '6px', backgroundColor: '#334155', color: '#ffffff', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            🚪 Test Knock
-          </button>
         </div>
       </div>
 

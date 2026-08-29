@@ -1,7 +1,7 @@
 // Speech Service: Standard Streaming Speech-to-Text (STT) & Native Text-to-Speech (TTS) Engine with SHA-256 Verification
 
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
-import { computeSha256Sync, computeSha256, verifySha256 } from './cryptoUtils';
+import { computeSha256Sync, verifySha256 } from './cryptoUtils';
 
 export interface SpeechRecognitionResultPayload {
   partialTranscript: string;
@@ -110,28 +110,42 @@ class SpeechService implements SpeechRecognitionEngine {
       }
     };
 
-    // PROVEN STANDARD WEB SPEECH API STT PARSER
+    // PROVEN STANDARD WEB SPEECH API STT PARSER WITH SILENCE COMMIT TIMEOUT
+    let silenceTimer: any = null;
+
     this.recognition.onresult = (event: any) => {
       if (!event.results) return;
 
       let interimTranscript = '';
       let finalTranscript = '';
 
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
+      for (let i = 0; i < event.results.length; ++i) {
         const item = event.results[i];
         if (!item || !item[0]) continue;
         if (item.isFinal) {
           finalTranscript += item[0].transcript + ' ';
         } else {
-          interimTranscript += item[0].transcript;
+          interimTranscript += item[0].transcript + ' ';
         }
       }
 
-      if (interimTranscript.trim() && this.onPartialCb) {
-        this.onPartialCb(interimTranscript.trim());
+      if (interimTranscript.trim()) {
+        const partialStr = interimTranscript.trim();
+        if (this.onPartialCb) this.onPartialCb(partialStr);
+
+        // SILENCE COMMIT TIMER (1200ms of no new speech commits sentence in-place)
+        if (silenceTimer) clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+          if (this.onFinalCb && partialStr) {
+            const sha256Hash = computeSha256Sync(partialStr);
+            this.lastFinalText = partialStr;
+            this.onFinalCb(partialStr, sha256Hash);
+          }
+        }, 1200);
       }
 
       if (finalTranscript.trim()) {
+        if (silenceTimer) clearTimeout(silenceTimer);
         const cleanText = finalTranscript.trim();
         const sha256Hash = computeSha256Sync(cleanText);
         this.lastFinalText = cleanText;
@@ -159,15 +173,26 @@ class SpeechService implements SpeechRecognitionEngine {
     try {
       this.status = 'listening';
       if (this.onStatusCb) this.onStatusCb('listening');
-      this.recognition.start();
+      
+      try {
+        this.recognition.stop();
+      } catch {}
+
+      setTimeout(() => {
+        try {
+          if (this.status === 'listening' && this.recognition) {
+            this.recognition.start();
+          }
+        } catch (e: any) {
+          if (e.name !== 'InvalidStateError') {
+            console.warn('Speech start warning:', e);
+          }
+        }
+      }, 150);
+
       return true;
     } catch (e: any) {
-      if (e.name === 'InvalidStateError') {
-        // Recognition was already running
-        return true;
-      }
       console.error('Failed to start recognition', e);
-      if (onError) onError('Microphone active in background.');
       return false;
     }
   }
