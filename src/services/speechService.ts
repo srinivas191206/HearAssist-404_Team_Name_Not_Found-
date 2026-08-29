@@ -192,26 +192,14 @@ class SpeechService implements SpeechRecognitionEngine {
     try {
       this.status = 'listening';
       if (this.onStatusCb) this.onStatusCb('listening');
-      
-      try {
-        this.recognition.stop();
-      } catch {}
-
-      setTimeout(() => {
-        try {
-          if (this.status === 'listening' && this.recognition) {
-            this.recognition.start();
-          }
-        } catch (e: any) {
-          if (e.name !== 'InvalidStateError') {
-            console.warn('Speech start warning:', e);
-          }
-        }
-      }, 150);
-
+      this.recognition.start();
       return true;
     } catch (e: any) {
-      console.error('Failed to start recognition', e);
+      if (e.name === 'InvalidStateError') {
+        // Recognition is already active
+        return true;
+      }
+      console.warn('Speech recognition start exception:', e);
       return false;
     }
   }

@@ -36,10 +36,20 @@ export const AwarenessView: React.FC = () => {
     };
   }, [isSoundMonitoringActive]);
 
+  interface ReminderItem {
+    id: string;
+    title: string;
+    time: string;
+    status: 'active' | 'done' | 'pending';
+    icon: string;
+    remainingSeconds?: number;
+    initialSeconds?: number;
+  }
+
   // Home Reminders State
-  const [reminders, setReminders] = useState([
-    { id: 'rem-1', title: 'Laundry', time: 'Timer • 10 mins ago', status: 'done', icon: '🧺' },
-    { id: 'rem-2', title: 'Cooking (Oven)', time: '25 mins remaining', status: 'active', icon: '🍳' },
+  const [reminders, setReminders] = useState<ReminderItem[]>([
+    { id: 'rem-1', title: 'Laundry', time: 'Completed • 10 mins ago', status: 'done', icon: '🧺' },
+    { id: 'rem-2', title: 'Cooking (Oven)', time: '01:00 remaining', status: 'active', icon: '🍳', remainingSeconds: 60, initialSeconds: 60 },
     { id: 'rem-3', title: 'Water Plants', time: 'Tomorrow, 9:00 AM', status: 'pending', icon: '🪴' },
   ]);
 
@@ -47,6 +57,38 @@ export const AwarenessView: React.FC = () => {
   const [isAddReminderOpen, setIsAddReminderOpen] = useState(false);
   const [newReminderTitle, setNewReminderTitle] = useState('');
   const [newReminderTime, setNewReminderTime] = useState('');
+
+  // LIVE REAL-TIME TIMER COUNTDOWN TICK (EVERY 1 SECOND)
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setReminders((prev) =>
+        prev.map((item) => {
+          if (item.status === 'active' && typeof item.remainingSeconds === 'number') {
+            if (item.remainingSeconds > 1) {
+              const nextSec = item.remainingSeconds - 1;
+              const mins = Math.floor(nextSec / 60);
+              const secs = nextSec % 60;
+              const formattedTime = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} remaining`;
+              return { ...item, remainingSeconds: nextSec, time: formattedTime };
+            } else if (item.remainingSeconds === 1) {
+              // TIMER EXPIRED! TRIGGER LOUD ALARM & VIBRATION
+              hapticService.vibrate([800, 150, 800, 150, 1000]);
+              speechService.speak(`Attention! It is time to ${item.title}!`, 1.0);
+              return {
+                ...item,
+                remainingSeconds: 0,
+                status: 'done',
+                time: `⏰ ALARM FINISHED! Time to ${item.title}`,
+              };
+            }
+          }
+          return item;
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, []);
 
   const handleToggleSoundMonitoring = async () => {
     hapticService.vibrate(30);
@@ -66,6 +108,26 @@ export const AwarenessView: React.FC = () => {
     );
   };
 
+  const handleAddPresetTimer = (title: string, seconds: number, icon: string) => {
+    hapticService.vibrate(30);
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const initialTimeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} remaining`;
+
+    const newRem: ReminderItem = {
+      id: `rem-${Date.now()}`,
+      title: title,
+      time: initialTimeStr,
+      status: 'active',
+      icon: icon,
+      remainingSeconds: seconds,
+      initialSeconds: seconds,
+    };
+
+    setReminders((prev) => [newRem, ...prev]);
+    setIsAddReminderOpen(false);
+  };
+
   const handleAddReminder = (e: React.FormEvent) => {
     e.preventDefault();
     const title = newReminderTitle.trim();
@@ -74,37 +136,29 @@ export const AwarenessView: React.FC = () => {
     hapticService.vibrate(30);
     const timeInput = newReminderTime.trim() || '1 min';
 
-    let durationMs = 60000; // default 1 min
-    if (timeInput.toLowerCase().includes('30 sec')) durationMs = 30000;
-    else if (timeInput.toLowerCase().includes('2 min')) durationMs = 120000;
-    else if (timeInput.toLowerCase().includes('5 min')) durationMs = 300000;
+    let totalSeconds = 60; // default 1 min
+    if (timeInput.toLowerCase().includes('30 sec')) totalSeconds = 30;
+    else if (timeInput.toLowerCase().includes('2 min')) totalSeconds = 120;
+    else if (timeInput.toLowerCase().includes('5 min')) totalSeconds = 300;
 
-    const newRem = {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    const initialTimeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} remaining`;
+
+    const newRem: ReminderItem = {
       id: `rem-${Date.now()}`,
       title: title,
-      time: `${timeInput} (Timer active)`,
+      time: initialTimeStr,
       status: 'active',
       icon: '⏰',
+      remainingSeconds: totalSeconds,
+      initialSeconds: totalSeconds,
     };
 
     setReminders((prev) => [newRem, ...prev]);
     setNewReminderTitle('');
     setNewReminderTime('');
     setIsAddReminderOpen(false);
-
-    // Active Timer Timeout Trigger
-    setTimeout(() => {
-      // 1. High Intensity Multi-Burst Vibration
-      hapticService.vibrate([800, 150, 800, 150, 1000]);
-
-      // 2. Announce Voice Alert via TTS
-      speechService.speak(`Timer Alert: ${title}`);
-
-      // 3. Update status in UI
-      setReminders((prev) =>
-        prev.map((item) => (item.id === newRem.id ? { ...item, status: 'done', time: 'Alarm Finished! ⏰' } : item))
-      );
-    }, durationMs);
   };
 
   // Get most recent detected alert or display default real-time listening banner
@@ -524,19 +578,47 @@ export const AwarenessView: React.FC = () => {
             />
           </div>
 
+          {/* Quick Preset Timer Buttons */}
           <div>
-            <label className="form-label">Time / Duration:</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="e.g. 15 mins timer or Today, 6:00 PM"
-              value={newReminderTime}
-              onChange={(e) => setNewReminderTime(e.target.value)}
-            />
+            <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 800 }}>1-Click Quick Real-Time Timers:</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => handleAddPresetTimer('Quick 1-Min Alarm', 60, '⏱️')}
+                style={{ fontSize: '0.8rem', padding: '0.6rem', border: '1px solid #00897b', color: '#00897b', fontWeight: 700 }}
+              >
+                ⏱️ 1 Min Alarm
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => handleAddPresetTimer('Cooking (Oven)', 120, '🍳')}
+                style={{ fontSize: '0.8rem', padding: '0.6rem', border: '1px solid #00897b', color: '#00897b', fontWeight: 700 }}
+              >
+                🍳 2 Min Cooking
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => handleAddPresetTimer('Medicine Alert', 300, '💊')}
+                style={{ fontSize: '0.8rem', padding: '0.6rem', border: '1px solid #00897b', color: '#00897b', fontWeight: 700 }}
+              >
+                💊 5 Min Medicine
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => handleAddPresetTimer('Fast 10s Alarm Test', 10, '⚡')}
+                style={{ fontSize: '0.8rem', padding: '0.6rem', border: '1px solid #ef4444', color: '#ef4444', fontWeight: 700 }}
+              >
+                ⚡ 10 Sec Test
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="btn btn-primary btn-full">
-            Save Reminder
+            Save Custom Reminder
           </button>
         </form>
       </Modal>
