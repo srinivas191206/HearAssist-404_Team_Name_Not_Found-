@@ -2,12 +2,13 @@
 
   <img src="public/logo.png" alt="HearAssist Logo" width="160" />
 
-  # 🤟 HearAssist
+  # HearAssist
   ### *Stay Aware. Stay Safe. Stay Connected.*
 
   **An Assistive Ecosystem for Hearing Impairment & Deaf Accessibility**
 
-  [![AITAM HackSprint](https://img.shields.io/badge/AITAM-HackSprint%202.0%20Hackathon-ff007f?style=for-the-badge&logo=google)](https://github.com/srinivas191206/access-)
+  [![AITAM HackSprint](https://img.shields.io/badge/AITAM-HackSprint%202.0-ff007f?style=for-the-badge&logo=google)](https://github.com/srinivas191206/HearAssist-404_Team_Name_Not_Found-)
+  [![Team 404](https://img.shields.io/badge/Team-404__Team__Name__Not__Found-6366f1?style=for-the-badge&logo=github)](https://github.com/srinivas191206/HearAssist-404_Team_Name_Not_Found-)
   [![Android Build](https://img.shields.io/badge/Android%20APK-BUILD%20SUCCESSFUL-00897b?style=for-the-badge&logo=android)](android/app/build/outputs/apk/debug/app-debug.apk)
   [![Groq AI](https://img.shields.io/badge/AI%20Engine-Groq%20Llama--3.3%2070B-f59e0b?style=for-the-badge&logo=meta)](https://groq.com/)
   [![TypeScript](https://img.shields.io/badge/Built%20With-React%20%2B%20TypeScript%20%2B%20Vite-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -27,7 +28,32 @@
 
 ## 🌟 Overview
 
-**HearAssist** is a multi-modular assistive mobile app designed to break communication barriers and guarantee safety for people with hearing impairment. Built for **AITAM HackSprint 2.0 Hackathon 2026**, HearAssist combines **Real-Time Sound AI Detection**, **Continuous Live Speech-to-Text (STT)**, **Native Hardware Text-to-Speech (TTS)**, **Automatic Mobile Shake SOS Emergency Dispatch**, and an **AI-Powered Sign Language Learning Hub**.
+> 🧊 **HearAssist** is a multi-modular assistive mobile app designed to break communication barriers and guarantee safety for people with hearing impairment. Built by **Team 404_Team_Name_Not_Found** for **AITAM HackSprint 2.0 Hackathon 2026**, HearAssist combines **Real-Time Sound AI Detection**, **Continuous Live Speech-to-Text (STT)**, **Native Hardware Text-to-Speech (TTS)**, **Automatic Mobile Shake SOS Emergency Dispatch**, and an **AI-Powered Sign Language Learning Hub**.
+
+---
+
+## 💎 3D Architecture & Feature Pillars
+
+```text
+  +-----------------------------------------------------------------+
+  |                       📱 HEARASSIST APP                         |
+  +-----------------------------------------------------------------+
+          |                   |                   |
+          v                   v                   v
+  +---------------+   +---------------+   +---------------+
+  |  🚨 SAFETY   |   | 💬 COMMUNICATE|   | ⏰ AWARENESS  |
+  |  Shake SOS    |   |  Live STT/TTS |   |  1s Timers    |
+  |  GPS SMS Net  |   |  1.5s Watchdog|   |  Voice Alarms |
+  +---------------+   +---------------+   +---------------+
+          |                   |                   |
+          +-------------------+-------------------+
+                              |
+                              v
+                     +-----------------+
+                     |   🎓 LEARN HUB  |
+                     |  Groq Llama AI  |
+                     +-----------------+
+```
 
 ---
 
@@ -123,8 +149,8 @@ graph TD
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/srinivas191206/access-.git
-cd access-
+git clone https://github.com/srinivas191206/HearAssist-404_Team_Name_Not_Found-.git
+cd HearAssist-404_Team_Name_Not_Found-
 npm install
 ```
 
@@ -152,7 +178,7 @@ The compiled APK will be output at:
 
 <div align="center">
 
-  ### 🏆 Built with ❤️ for **AITAM HackSprint 2.0 Hackathon 2026**
-  **Team HearAssist** • *Empowering Hearing Impairment Through Innovation*
+  ### 🏆 Built by **Team 404_Team_Name_Not_Found** for **AITAM HackSprint 2.0 Hackathon 2026**
+  *Empowering Hearing Impairment Through Innovation*
 
 </div>
