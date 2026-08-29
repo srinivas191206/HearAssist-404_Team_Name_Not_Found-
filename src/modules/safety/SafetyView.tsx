@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Shield, ShieldCheck, Wifi, MapPin, Mic, BatteryCharging, Clock, Users, ChevronRight, PhoneCall } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ContactsConfig } from './ContactsConfig';
@@ -9,6 +9,28 @@ export const SafetyView: React.FC = () => {
 
   const [isSystemArmed, setIsSystemArmed] = useState(true);
   const [activeModal, setActiveModal] = useState<'contacts' | 'history' | null>(null);
+
+  // LIVE REAL PHYSICAL PHONE BATTERY DETECTION
+  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
+  const [isCharging, setIsCharging] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'getBattery' in navigator) {
+      (navigator as any).getBattery().then((battery: any) => {
+        setBatteryLevel(Math.round(battery.level * 100));
+        setIsCharging(battery.charging);
+
+        battery.addEventListener('levelchange', () => {
+          setBatteryLevel(Math.round(battery.level * 100));
+        });
+        battery.addEventListener('chargingchange', () => {
+          setIsCharging(battery.charging);
+        });
+      }).catch(() => {
+        setBatteryLevel(null);
+      });
+    }
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
@@ -183,26 +205,28 @@ export const SafetyView: React.FC = () => {
         </button>
       </div>
 
-      {/* 4. PHONE STATUS CARD */}
-      <div className="card" style={{ padding: '0.85rem 1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'var(--teal-50)', color: 'var(--teal-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BatteryCharging size={20} />
+      {/* 4. LIVE REAL PHYSICAL PHONE BATTERY STATUS CARD (RENDERED ONLY WHEN SUPPORTED) */}
+      {batteryLevel !== null && (
+        <div className="card" style={{ padding: '0.85rem 1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'var(--teal-50)', color: 'var(--teal-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <BatteryCharging size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                PHONE STATUS
+              </div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '1px' }}>
+                Battery: <strong style={{ color: 'var(--teal-700)' }}>{batteryLevel}% {isCharging ? '• Charging' : '• Discharging'}</strong>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                Network: <strong>Good</strong> • Location: <strong>On</strong>
+              </div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              PHONE STATUS
-            </div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '1px' }}>
-              Battery: <strong style={{ color: 'var(--teal-700)' }}>82% • Charging</strong>
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Network: <strong>Good</strong> • Location: <strong>On</strong>
-            </div>
-          </div>
+          <ChevronRight size={18} style={{ color: 'var(--slate-400)' }} />
         </div>
-        <ChevronRight size={18} style={{ color: 'var(--slate-400)' }} />
-      </div>
+      )}
 
       {/* 5. 2-COLUMN ASYMMETRIC CARDS (SOS HISTORY & EMERGENCY CONTACTS) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
