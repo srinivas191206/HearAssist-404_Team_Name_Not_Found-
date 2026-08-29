@@ -15,11 +15,12 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
   const [contactRelation, setContactRelation] = useState('Family');
   const [formError, setFormError] = useState('');
 
+  // 1. INCREASED SPLASH DURATION (3600ms = 3.6 SECONDS TOTAL LOADING TIME)
   useEffect(() => {
     if (step === 0) {
       const timer = setTimeout(() => {
         setStep(1);
-      }, 1600);
+      }, 3600);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -61,8 +62,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     onComplete();
   };
 
-  // SCREEN 1: SPLASH SCREEN (OPENING LOGO DISPLAY)
-  // SCREEN 1: HACKSPRINT 2.0 / AITAM OFFICIAL SPLASH SCREEN (IMAGE TOP, INTERACTIVE LOADING BOTTOM)
+  // SCREEN 1: HACKSPRINT 2.0 / AITAM OFFICIAL SPLASH SCREEN (3.6s SMOOTH LOADING)
   if (step === 0) {
     return (
       <div
@@ -104,7 +104,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
           />
         </div>
 
-        {/* BOTTOM: INTERACTIVE ANIMATED LOADING BAR */}
+        {/* BOTTOM: SMOOTH INTERACTIVE LOADING BAR */}
         <div
           style={{
             width: '100%',
@@ -154,46 +154,76 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     );
   }
 
-  // SCREEN 2: ONBOARDING INTRO 1
+  // SCREEN 2: ONBOARDING INTRO 1 (CLEAN, SWEET & PRODUCTION READY)
   if (step === 1) {
     return (
-      <div className="onboarding-container">
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '3.5rem 1.75rem 2.5rem 1.75rem',
+          boxSizing: 'border-box',
+        }}
+      >
         <div>
-          <h2 className="onboarding-header-title">
-            Your <span>Safety</span>.<br />
-            Your <span>Communication</span>.<br />
-            Your <span>Learning</span>.
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
+            Your <span style={{ color: '#00897b' }}>Safety</span>.<br />
+            Your <span style={{ color: '#00897b' }}>Communication</span>.<br />
+            Your <span style={{ color: '#00897b' }}>Learning</span>.
           </h2>
-          <p className="onboarding-subtitle">
+          <p style={{ fontSize: '0.95rem', color: '#64748b', marginTop: '1rem', fontWeight: 500, lineHeight: 1.5 }}>
             An assistive ecosystem for people with hearing impairment.
           </p>
         </div>
 
-        <div className="onboarding-illustration-center">
+        {/* CENTER STATIC LOGO CARD (SIMPLE & SWEET) */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: 'auto 0' }}>
           <div
             style={{
-              width: '180px',
-              height: '180px',
-              borderRadius: '24px',
+              width: '210px',
+              height: '210px',
+              borderRadius: '32px',
               backgroundColor: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-              padding: '1rem',
+              boxShadow: '0 20px 50px rgba(0, 137, 123, 0.10), 0 4px 12px rgba(0, 0, 0, 0.03)',
+              padding: '1.25rem',
+              border: '1px solid #f1f5f9',
             }}
           >
             <img src="/logo.png" alt="HearAssist Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
         </div>
 
-        <div className="onboarding-footer">
-          <div className="onboarding-dots">
-            <span className="dot active" />
-            <span className="dot" />
-            <span className="dot" />
+        {/* BOTTOM NAVIGATION BAR */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
           </div>
-          <button className="btn btn-primary" onClick={handleNext} style={{ padding: '0.75rem 1.75rem', borderRadius: '12px' }}>
+
+          <button
+            className="btn"
+            onClick={handleNext}
+            style={{
+              backgroundColor: '#00897b',
+              color: '#ffffff',
+              padding: '0.85rem 2rem',
+              borderRadius: '16px',
+              fontWeight: 800,
+              fontSize: '0.95rem',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(0, 137, 123, 0.25)',
+              letterSpacing: '0.02em',
+            }}
+          >
             NEXT
           </button>
         </div>
@@ -201,34 +231,76 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
     );
   }
 
-  // SCREEN 3: ONBOARDING INTRO 2
+  // SCREEN 3: ONBOARDING INTRO 2 (STAY AWARE • STAY SAFE)
   if (step === 2) {
     return (
-      <div className="onboarding-container">
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '3.5rem 1.75rem 2.5rem 1.75rem',
+          boxSizing: 'border-box',
+        }}
+      >
         <div>
-          <h2 className="onboarding-header-title">
-            Stay <span>Aware</span>.<br />
-            Stay <span>Safe</span>.
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
+            Stay <span style={{ color: '#00897b' }}>Aware</span>.<br />
+            Stay <span style={{ color: '#00897b' }}>Safe</span>.
           </h2>
-          <p className="onboarding-subtitle">
+          <p style={{ fontSize: '0.95rem', color: '#64748b', marginTop: '1rem', fontWeight: 500, lineHeight: 1.5 }}>
             Get real-time sound alerts & instant background emergency SOS dispatch.
           </p>
         </div>
 
-        <div className="onboarding-illustration-center">
-          <div className="onboarding-circle-bg">
-            <ShieldCheck size={90} />
+        {/* CENTER SHIELD ILLUSTRATION */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div
+            style={{
+              width: '210px',
+              height: '210px',
+              borderRadius: '50%',
+              backgroundColor: '#e6f4f1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 16px 40px rgba(0, 137, 123, 0.08)',
+            }}
+          >
+            <ShieldCheck size={90} color="#00897b" />
           </div>
         </div>
 
-        <div className="onboarding-footer">
-          <div className="onboarding-dots">
-            <span className="dot" />
-            <span className="dot active" />
-            <span className="dot" />
+        {/* BOTTOM NAVIGATION BAR */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
+            <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
           </div>
-          <button className="btn btn-primary" onClick={handleNext} style={{ padding: '0.75rem 1.75rem', borderRadius: '12px' }}>
-            SETUP PROFILE <ArrowRight size={16} />
+
+          <button
+            className="btn"
+            onClick={handleNext}
+            style={{
+              backgroundColor: '#00897b',
+              color: '#ffffff',
+              padding: '0.85rem 1.65rem',
+              borderRadius: '16px',
+              fontWeight: 800,
+              fontSize: '0.95rem',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(0, 137, 123, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            SETUP PROFILE <ArrowRight size={18} />
           </button>
         </div>
       </div>
@@ -237,29 +309,41 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
 
   // SCREEN 4: MANDATORY USER PROFILE & EMERGENCY CONTACT SETUP FORM
   return (
-    <div className="onboarding-container" style={{ overflowY: 'auto' }}>
+    <div
+      style={{
+        width: '100%',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '3rem 1.5rem 2rem 1.5rem',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}
+    >
       <div>
-        <h2 className="onboarding-header-title" style={{ fontSize: '1.6rem' }}>
-          Profile & <span>Emergency Contact</span>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 900, lineHeight: 1.25, color: '#0f172a', margin: 0 }}>
+          Profile & <span style={{ color: '#00897b' }}>Emergency Contact</span>
         </h2>
-        <p className="onboarding-subtitle" style={{ fontSize: '0.825rem' }}>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.4rem', fontWeight: 500 }}>
           Please enter your name and at least 1 primary emergency contact.
         </p>
       </div>
 
-      <form onSubmit={handleFinishSetup} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%' }}>
+      <form onSubmit={handleFinishSetup} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', margin: '1rem 0' }}>
         {formError && (
-          <div style={{ backgroundColor: '#fff5f5', border: '1px solid #ffe3e3', color: '#c53030', padding: '0.65rem', borderRadius: '10px', fontSize: '0.8rem', textAlign: 'center' }}>
+          <div style={{ backgroundColor: '#fff5f5', border: '1px solid #ffe3e3', color: '#c53030', padding: '0.65rem', borderRadius: '12px', fontSize: '0.825rem', textAlign: 'center', fontWeight: 700 }}>
             {formError}
           </div>
         )}
 
         {/* User Details */}
-        <div style={{ backgroundColor: '#ffffff', padding: '0.85rem', borderRadius: '14px', border: '1px solid var(--border-card)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--teal-800)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <User size={14} /> YOUR DETAILS
+        <div style={{ backgroundColor: '#ffffff', padding: '1rem', borderRadius: '18px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#00897b', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <User size={15} /> YOUR DETAILS
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <input
               type="text"
               className="form-input"
@@ -267,7 +351,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               required
-              style={{ fontSize: '0.9rem', padding: '0.65rem' }}
+              style={{ fontSize: '0.925rem', padding: '0.75rem', borderRadius: '12px', border: '1.5px solid #e2e8f0' }}
             />
             <input
               type="tel"
@@ -275,17 +359,17 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
               placeholder="Your Phone Number (Optional)"
               value={userPhone}
               onChange={(e) => setUserPhone(e.target.value)}
-              style={{ fontSize: '0.9rem', padding: '0.65rem' }}
+              style={{ fontSize: '0.925rem', padding: '0.75rem', borderRadius: '12px', border: '1.5px solid #e2e8f0' }}
             />
           </div>
         </div>
 
         {/* Primary Emergency Contact (Mandatory) */}
-        <div style={{ backgroundColor: '#ffffff', padding: '0.85rem', borderRadius: '14px', border: '1px solid var(--border-card)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <UserPlus size={14} /> PRIMARY EMERGENCY CONTACT (REQUIRED)
+        <div style={{ backgroundColor: '#ffffff', padding: '1rem', borderRadius: '18px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <UserPlus size={15} /> PRIMARY EMERGENCY CONTACT (REQUIRED)
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <input
               type="text"
               className="form-input"
@@ -293,7 +377,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
               required
-              style={{ fontSize: '0.9rem', padding: '0.65rem' }}
+              style={{ fontSize: '0.925rem', padding: '0.75rem', borderRadius: '12px', border: '1.5px solid #e2e8f0' }}
             />
             <input
               type="tel"
@@ -302,7 +386,7 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
               required
-              style={{ fontSize: '0.9rem', padding: '0.65rem' }}
+              style={{ fontSize: '0.925rem', padding: '0.75rem', borderRadius: '12px', border: '1.5px solid #e2e8f0' }}
             />
             <input
               type="text"
@@ -310,18 +394,34 @@ export const OnboardingView: React.FC<{ onComplete: () => void }> = ({ onComplet
               placeholder="Relationship (e.g. Mother / Spouse / Friend)"
               value={contactRelation}
               onChange={(e) => setContactRelation(e.target.value)}
-              style={{ fontSize: '0.9rem', padding: '0.65rem' }}
+              style={{ fontSize: '0.925rem', padding: '0.75rem', borderRadius: '12px', border: '1.5px solid #e2e8f0' }}
             />
           </div>
         </div>
 
-        <div className="onboarding-footer" style={{ marginTop: '0.5rem' }}>
-          <div className="onboarding-dots">
-            <span className="dot" />
-            <span className="dot" />
-            <span className="dot active" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
+            <span style={{ width: '28px', height: '8px', borderRadius: '10px', backgroundColor: '#00897b' }} />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', width: '100%', height: '46px', fontSize: '0.9rem', fontWeight: 800 }}>
+
+          <button
+            type="submit"
+            className="btn"
+            style={{
+              backgroundColor: '#00897b',
+              color: '#ffffff',
+              padding: '0.85rem 1.5rem',
+              borderRadius: '16px',
+              fontWeight: 800,
+              fontSize: '0.875rem',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(0, 137, 123, 0.25)',
+              letterSpacing: '0.01em',
+            }}
+          >
             COMPLETE SETUP & START PROTECTION
           </button>
         </div>
