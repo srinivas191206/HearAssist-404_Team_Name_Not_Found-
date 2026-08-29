@@ -89,82 +89,85 @@ export const SafetyView: React.FC = () => {
       </div>
 
       {/* 3. CENTRAL RED SOS BUTTON HERO WITH INTERACTIVE ROTATING & PULSING RADAR RINGS */}
+      {/* 3. CENTRAL RED SOS BUTTON HERO WITH DOTTED RADAR ORBIT & ZOOM IN/OUT FLOATING ANIMATION */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '2.5rem 0',
+          padding: '2rem 0',
           position: 'relative',
+          width: '100%',
         }}
       >
-        {/* Interactive Rotating Outer Loading Orbit Ring */}
         <div
           style={{
-            width: '240px',
-            height: '240px',
-            borderRadius: '50%',
-            border: '3px dashed rgba(239, 68, 68, 0.4)',
-            position: 'absolute',
-            animation: 'spin 10s linear infinite',
-            boxShadow: '0 0 25px rgba(239, 68, 68, 0.15)',
-          }}
-        />
-
-        {/* Pulse Radar Ring 1 */}
-        <div
-          style={{
-            width: '200px',
-            height: '200px',
-            borderRadius: '50%',
-            border: '2px solid rgba(239, 68, 68, 0.35)',
-            position: 'absolute',
-            animation: 'ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',
-          }}
-        />
-
-        {/* Pulse Radar Ring 2 */}
-        <div
-          style={{
-            width: '165px',
-            height: '165px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-            border: '1.5px solid rgba(239, 68, 68, 0.25)',
-            position: 'absolute',
-            animation: 'pulse 1.8s ease-in-out infinite',
-          }}
-        />
-
-        {/* GLOWING RED SOS BUTTON */}
-        <button
-          onClick={() => triggerSosCountdown('manual')}
-          aria-label="Tap to trigger emergency SOS"
-          style={{
-            width: '140px',
-            height: '140px',
-            borderRadius: '50%',
-            backgroundColor: '#dc2626',
-            background: 'radial-gradient(circle at 35% 35%, #ef4444, #b91c1c)',
-            border: '4px solid #ffffff',
-            boxShadow: '0 12px 36px rgba(220, 38, 38, 0.45), inset 0 4px 10px rgba(255, 255, 255, 0.3)',
+            position: 'relative',
+            width: '220px',
+            height: '220px',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 2,
-            transition: 'transform 0.15s ease',
           }}
         >
-          <Shield size={38} color="#ffffff" style={{ marginBottom: '2px' }} />
-          <span style={{ color: '#ffffff', fontSize: '1.5rem', fontWeight: 900, letterSpacing: '0.05em' }}>
-            SOS
-          </span>
-        </button>
+          {/* Outer Interactive Rotating Dotted Orbit Ring */}
+          <div
+            style={{
+              width: '220px',
+              height: '220px',
+              borderRadius: '50%',
+              border: '3px dashed #ef4444',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              animation: 'spin 12s linear infinite',
+              boxShadow: '0 0 25px rgba(239, 68, 68, 0.15)',
+              boxSizing: 'border-box',
+            }}
+          />
 
-        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '1rem' }}>
+          {/* Soft Radar Wave Ring */}
+          <div
+            style={{
+              width: '185px',
+              height: '185px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+              border: '1.5px solid rgba(239, 68, 68, 0.25)',
+              position: 'absolute',
+              animation: 'pulse 2s ease-in-out infinite',
+            }}
+          />
+
+          {/* GLOWING RED SOS BUTTON (OVERLAPS FLOATING DIRECTLY ON DOTTED CIRCLE WITH ZOOM IN / ZOOM OUT BREATHING) */}
+          <button
+            onClick={() => triggerSosCountdown('manual')}
+            aria-label="Tap to trigger emergency SOS"
+            style={{
+              width: '145px',
+              height: '145px',
+              borderRadius: '50%',
+              backgroundColor: '#dc2626',
+              background: 'radial-gradient(circle at 35% 35%, #ef4444, #b91c1c)',
+              border: '4px solid #ffffff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10,
+              animation: 'sosZoomPulse 2.4s ease-in-out infinite',
+            }}
+          >
+            <Shield size={40} color="#ffffff" style={{ marginBottom: '2px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }} />
+            <span style={{ color: '#ffffff', fontSize: '1.55rem', fontWeight: 900, letterSpacing: '0.06em', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+              SOS
+            </span>
+          </button>
+        </div>
+
+        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '1.25rem' }}>
           TAP TO TRIGGER SOS
         </div>
 
@@ -173,7 +176,7 @@ export const SafetyView: React.FC = () => {
           className="btn btn-secondary"
           onClick={() => setIsSystemArmed(!isSystemArmed)}
           style={{
-            marginTop: '0.85rem',
+            marginTop: '0.75rem',
             padding: '0.5rem 1.5rem',
             borderRadius: '24px',
             fontSize: '0.875rem',
@@ -182,6 +185,7 @@ export const SafetyView: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
           <ShieldCheck size={18} className="text-teal" /> {isSystemArmed ? 'ARM SYSTEM' : 'DISARM SYSTEM'}
