@@ -69,7 +69,7 @@ export const LearnView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingBottom: '90px', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingBottom: '140px', boxSizing: 'border-box' }}>
       {/* 1. HEADER WITH BACK TRACKING & LOGOO.PNG */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -278,8 +278,8 @@ export const LearnView: React.FC = () => {
                   </span>
                 </div>
 
-                {/* 4x2 QUICK SIGNS GRID */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.55rem' }}>
+                {/* QUICK SIGNS HORIZONTAL SCROLL CHIPS */}
+                <div style={{ display: 'flex', gap: '0.55rem', overflowX: 'auto', paddingBottom: '0.35rem', scrollbarWidth: 'none' }}>
                   {[
                     { name: 'HELP', icon: Zap, color: '#ef4444', bg: '#ffebee' },
                     { name: 'EMERGENCY', icon: ShieldAlert, color: '#ef4444', bg: '#ffebee' },
@@ -296,21 +296,21 @@ export const LearnView: React.FC = () => {
                       onClick={() => handleQuickSignClick(item.name.toLowerCase())}
                       style={{
                         cursor: 'pointer',
-                        padding: '0.65rem 0.4rem',
-                        borderRadius: '14px',
+                        padding: '0.6rem 0.85rem',
+                        borderRadius: '16px',
                         border: '1px solid var(--border-card)',
-                        textAlign: 'center',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.4rem',
+                        gap: '0.45rem',
                         backgroundColor: '#ffffff',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
                       }}
                     >
                       <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: item.bg, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <item.icon size={13} />
                       </div>
-                      <span style={{ fontSize: '0.725rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                      <span style={{ fontSize: '0.775rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                         {item.name}
                       </span>
                     </div>

@@ -509,30 +509,30 @@
 /* Floating Ask AI Button (Anchored to Phone Layout Frame) */
 .ask-ai-floating-btn {
   position: fixed;
-  bottom: 84px;
-  right: calc(50% - 220px);
-  z-index: 99;
+  bottom: 82px;
+  right: 18px;
+  z-index: 100;
   cursor: pointer;
+  background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+  color: #ffffff;
+  padding: 0.55rem 1rem;
+  border-radius: 30px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--teal-600);
-  color: #ffffff;
-  padding: 0.65rem 1rem;
-  border-radius: 30px;
-  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 137, 123, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ask-ai-floating-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(13, 148, 136, 0.55);
+  box-shadow: 0 12px 28px rgba(0, 137, 123, 0.55);
 }
 
 @media (max-width: 480px) {
   .ask-ai-floating-btn {
     right: 16px;
+    bottom: 80px;
   }
 }
-
