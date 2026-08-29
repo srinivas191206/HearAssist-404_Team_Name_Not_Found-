@@ -57,6 +57,9 @@ const MainLayout: React.FC = () => {
         <div className="ambient-bubble-3" />
       </div>
 
+      {/* LOW OPACITY TRANSPARENT BRAND LOGO WATERMARK OVERLAY ACROSS PAGE */}
+      <img src="/logo.png" alt="HearAssist Watermark" className="brand-watermark-bg" />
+
       <AlertBanner />
       <CountdownModal />
 
