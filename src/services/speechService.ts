@@ -41,6 +41,7 @@ class SpeechService implements SpeechRecognitionEngine {
   private lastFinalText = '';
   private lastSpokenHash = '';
   private restartTimeout: any = null;
+  private isRestarting = false;
 
   constructor() {
     this.recreateRecognition();
@@ -52,22 +53,37 @@ class SpeechService implements SpeechRecognitionEngine {
     return !!(win.SpeechRecognition || win.webkitSpeechRecognition);
   }
 
-  private safeRestart(): void {
+  private startOrRestartRecognition(): void {
+    if (this.isRestarting) return;
+    this.isRestarting = true;
+
     if (this.restartTimeout) clearTimeout(this.restartTimeout);
-    if (this.status !== 'listening') return;
 
     this.restartTimeout = setTimeout(() => {
-      if (this.status === 'listening') {
+      this.isRestarting = false;
+      if (this.status !== 'listening') return;
+
+      try {
+        if (!this.recognition) {
+          this.recreateRecognition();
+        }
+        this.recognition.start();
+      } catch (e: any) {
+        if (e.name === 'InvalidStateError') {
+          // Already listening cleanly
+          return;
+        }
+        // If recognition died, recreate and restart
         try {
           this.recreateRecognition();
           if (this.recognition) {
             this.recognition.start();
           }
-        } catch (e) {
-          console.warn('Speech restart exception:', e);
+        } catch (err) {
+          console.warn('Speech recognition restart exception:', err);
         }
       }
-    }, 200);
+    }, 150);
   }
 
   private recreateRecognition(): void {
@@ -102,7 +118,7 @@ class SpeechService implements SpeechRecognitionEngine {
 
     this.recognition.onend = () => {
       if (this.status === 'listening') {
-        this.safeRestart();
+        this.startOrRestartRecognition();
       } else if (this.status !== 'paused') {
         this.status = 'stopped';
         if (this.onStatusCb) this.onStatusCb('stopped');
@@ -112,7 +128,7 @@ class SpeechService implements SpeechRecognitionEngine {
     this.recognition.onerror = (event: any) => {
       if (event.error === 'aborted' || event.error === 'no-speech' || event.error === 'network') {
         if (this.status === 'listening') {
-          this.safeRestart();
+          this.startOrRestartRecognition();
         }
         return;
       }
@@ -200,59 +216,42 @@ class SpeechService implements SpeechRecognitionEngine {
     this.status = 'listening';
     if (this.onStatusCb) this.onStatusCb('listening');
 
-    this.recreateRecognition();
-
-    if (!this.recognition) {
-      if (onError) onError('Speech Recognition is not supported on this device.');
-      return false;
-    }
-
-    try {
-      this.recognition.start();
-      return true;
-    } catch (e: any) {
-      if (e.name === 'InvalidStateError') {
-        return true;
-      }
-      console.warn('Speech recognition start exception:', e);
-      return false;
-    }
+    this.startOrRestartRecognition();
+    return true;
   }
 
   public stopListening(): void {
+    this.status = 'stopped';
     if (this.restartTimeout) clearTimeout(this.restartTimeout);
-    if (this.recognition && this.status !== 'stopped') {
+    if (this.recognition) {
       try {
+        this.recognition.onstart = null;
+        this.recognition.onend = null;
+        this.recognition.onerror = null;
         this.recognition.stop();
       } catch (e) {
         console.warn('Error stopping recognition', e);
       }
     }
-    this.status = 'stopped';
     if (this.onStatusCb) this.onStatusCb('stopped');
   }
 
   public pauseListening(): void {
+    this.status = 'paused';
     if (this.restartTimeout) clearTimeout(this.restartTimeout);
-    if (this.recognition && this.status === 'listening') {
+    if (this.recognition) {
       try {
         this.recognition.stop();
       } catch {}
-      this.status = 'paused';
       if (this.onStatusCb) this.onStatusCb('paused');
     }
   }
 
   public resumeListening(): void {
     if (this.status === 'paused') {
-      try {
-        this.status = 'listening';
-        if (this.onStatusCb) this.onStatusCb('listening');
-        this.recreateRecognition();
-        this.recognition.start();
-      } catch (e) {
-        console.error('Error resuming recognition', e);
-      }
+      this.status = 'listening';
+      if (this.onStatusCb) this.onStatusCb('listening');
+      this.startOrRestartRecognition();
     }
   }
 
