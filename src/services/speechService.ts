@@ -1,4 +1,4 @@
-// Speech Service: Standard Streaming Speech-to-Text (STT) & Native Text-to-Speech (TTS) Engine with SHA-256 Verification
+// Speech Service: Standard Streaming Speech-to-Text (STT) & Native Text-to-Speech (TTS) Engine with SHA-256 Verification & Watchdog Liveness Guard
 
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { computeSha256Sync, verifySha256 } from './cryptoUtils';
@@ -40,8 +40,10 @@ class SpeechService implements SpeechRecognitionEngine {
   private onStatusCb: StatusCallback | null = null;
   private lastFinalText = '';
   private lastSpokenHash = '';
-  private restartTimeout: any = null;
-  private isRestarting = false;
+
+  // Watchdog Liveness & Auto-Heal Loop
+  private heartbeatTimer: any = null;
+  private isCurrentlyActive = false;
 
   constructor() {
     this.recreateRecognition();
@@ -53,37 +55,35 @@ class SpeechService implements SpeechRecognitionEngine {
     return !!(win.SpeechRecognition || win.webkitSpeechRecognition);
   }
 
-  private startOrRestartRecognition(): void {
-    if (this.isRestarting) return;
-    this.isRestarting = true;
-
-    if (this.restartTimeout) clearTimeout(this.restartTimeout);
-
-    this.restartTimeout = setTimeout(() => {
-      this.isRestarting = false;
-      if (this.status !== 'listening') return;
-
-      try {
-        if (!this.recognition) {
-          this.recreateRecognition();
-        }
-        this.recognition.start();
-      } catch (e: any) {
-        if (e.name === 'InvalidStateError') {
-          // Already listening cleanly
-          return;
-        }
-        // If recognition died, recreate and restart
-        try {
-          this.recreateRecognition();
-          if (this.recognition) {
-            this.recognition.start();
-          }
-        } catch (err) {
-          console.warn('Speech recognition restart exception:', err);
-        }
+  // Watchdog loop checks every 1.5s while in 'listening' mode
+  private startWatchdog(): void {
+    this.stopWatchdog();
+    this.heartbeatTimer = setInterval(() => {
+      if (this.status === 'listening' && !this.isCurrentlyActive) {
+        console.log('[SpeechWatchdog] Reviving inactive speech recognition on Android...');
+        this.recreateAndStart();
       }
-    }, 150);
+    }, 1500);
+  }
+
+  private stopWatchdog(): void {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+  }
+
+  private recreateAndStart(): void {
+    try {
+      this.recreateRecognition();
+      if (this.recognition) {
+        this.recognition.start();
+      }
+    } catch (e: any) {
+      if (e.name !== 'InvalidStateError') {
+        console.warn('Speech recreateAndStart exception:', e);
+      }
+    }
   }
 
   private recreateRecognition(): void {
@@ -113,12 +113,18 @@ class SpeechService implements SpeechRecognitionEngine {
 
     this.recognition.onstart = () => {
       this.status = 'listening';
+      this.isCurrentlyActive = true;
       if (this.onStatusCb) this.onStatusCb('listening');
     };
 
     this.recognition.onend = () => {
+      this.isCurrentlyActive = false;
       if (this.status === 'listening') {
-        this.startOrRestartRecognition();
+        setTimeout(() => {
+          if (this.status === 'listening' && !this.isCurrentlyActive) {
+            this.recreateAndStart();
+          }
+        }, 200);
       } else if (this.status !== 'paused') {
         this.status = 'stopped';
         if (this.onStatusCb) this.onStatusCb('stopped');
@@ -126,9 +132,14 @@ class SpeechService implements SpeechRecognitionEngine {
     };
 
     this.recognition.onerror = (event: any) => {
+      this.isCurrentlyActive = false;
       if (event.error === 'aborted' || event.error === 'no-speech' || event.error === 'network') {
         if (this.status === 'listening') {
-          this.startOrRestartRecognition();
+          setTimeout(() => {
+            if (this.status === 'listening' && !this.isCurrentlyActive) {
+              this.recreateAndStart();
+            }
+          }, 200);
         }
         return;
       }
@@ -216,13 +227,16 @@ class SpeechService implements SpeechRecognitionEngine {
     this.status = 'listening';
     if (this.onStatusCb) this.onStatusCb('listening');
 
-    this.startOrRestartRecognition();
+    this.recreateAndStart();
+    this.startWatchdog();
     return true;
   }
 
   public stopListening(): void {
     this.status = 'stopped';
-    if (this.restartTimeout) clearTimeout(this.restartTimeout);
+    this.isCurrentlyActive = false;
+    this.stopWatchdog();
+
     if (this.recognition) {
       try {
         this.recognition.onstart = null;
@@ -238,7 +252,9 @@ class SpeechService implements SpeechRecognitionEngine {
 
   public pauseListening(): void {
     this.status = 'paused';
-    if (this.restartTimeout) clearTimeout(this.restartTimeout);
+    this.isCurrentlyActive = false;
+    this.stopWatchdog();
+
     if (this.recognition) {
       try {
         this.recognition.stop();
@@ -251,7 +267,8 @@ class SpeechService implements SpeechRecognitionEngine {
     if (this.status === 'paused') {
       this.status = 'listening';
       if (this.onStatusCb) this.onStatusCb('listening');
-      this.startOrRestartRecognition();
+      this.recreateAndStart();
+      this.startWatchdog();
     }
   }
 
