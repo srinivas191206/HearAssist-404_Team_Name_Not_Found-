@@ -247,7 +247,7 @@ export const ICantHearYouView: React.FC = () => {
           <img src="/logo.png" alt="HearAssist Logo" style={{ height: '32px', width: 'auto', objectFit: 'contain', flexShrink: 0 }} />
 
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, whiteSpace: 'nowrap' }}>
+            <h1 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, whiteSpace: 'nowrap', letterSpacing: '0.05em' }}>
               Communicate
             </h1>
             <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0, whiteSpace: 'nowrap' }}>

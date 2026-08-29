@@ -191,7 +191,7 @@ export const AwarenessView: React.FC = () => {
           <img src="/logo.png" alt="HearAssist Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
 
           <div>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, letterSpacing: '0.05em' }}>
               Awareness Hub
             </h1>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1px' }}>
