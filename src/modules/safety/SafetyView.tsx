@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Shield, ShieldCheck, Wifi, MapPin, Mic, BatteryCharging, Clock, Users, ChevronRight, PhoneCall, Activity } from 'lucide-react';
+import { ArrowLeft, Shield, ShieldCheck, Wifi, MapPin, Mic, Clock, Users, ChevronRight, PhoneCall, Activity } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ContactsConfig } from './ContactsConfig';
 import { sensorService } from '../../services/sensorService';
@@ -192,26 +192,7 @@ export const SafetyView: React.FC = () => {
         </button>
       </div>
 
-      {/* 4. PHONE STATUS CARD */}
-      <div className="card" style={{ padding: '0.85rem 1rem', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'var(--teal-50)', color: 'var(--teal-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BatteryCharging size={20} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              PHONE STATUS
-            </div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '1px' }}>
-              Battery: <strong style={{ color: 'var(--teal-700)' }}>82% • Charging</strong>
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Network: <strong>Good</strong> • Location: <strong>On</strong>
-            </div>
-          </div>
-        </div>
-        <ChevronRight size={18} style={{ color: 'var(--slate-400)' }} />
-      </div>
+
 
       {/* 5. 2-COLUMN ASYMMETRIC CARDS (SOS HISTORY & EMERGENCY CONTACTS) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
