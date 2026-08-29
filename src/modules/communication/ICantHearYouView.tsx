@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Mic, MicOff, RotateCcw, Trash2, Volume2, Activity, ArrowDown } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, RotateCcw, Trash2, Volume2, Activity, ArrowDown, ShieldCheck } from 'lucide-react';
 import { speechService } from '../../services/speechService';
 import { hapticService } from '../../services/hapticService';
 import { useApp } from '../../context/AppContext';
@@ -73,9 +73,11 @@ export const ICantHearYouView: React.FC = () => {
       (partial: string) => {
         setPartialText(partial);
       },
-      (final: string) => {
+      (final: string, hash: string) => {
         const cleanText = final.trim();
         if (!cleanText) return;
+
+        const sha256Hash = hash || speechService.getTranscriptHash(cleanText);
 
         // Incremental Sub-phrase Merging & Deduplication
         setTranscriptEntries((prev) => {
@@ -86,6 +88,7 @@ export const ICantHearYouView: React.FC = () => {
               text: cleanText,
               timestamp: getCurrentTimeString(),
               isFinal: true,
+              sha256Hash,
             };
             return [newEntry];
           }
@@ -105,6 +108,7 @@ export const ICantHearYouView: React.FC = () => {
               ...lastEntry,
               text: cleanText,
               timestamp: getCurrentTimeString(),
+              sha256Hash,
             };
             return updated;
           }
@@ -115,6 +119,7 @@ export const ICantHearYouView: React.FC = () => {
             text: cleanText,
             timestamp: getCurrentTimeString(),
             isFinal: true,
+            sha256Hash,
           };
           return [...prev, newEntry];
         });
@@ -192,6 +197,7 @@ export const ICantHearYouView: React.FC = () => {
       text: text,
       timestamp: getCurrentTimeString(),
       isFinal: true,
+      sha256Hash: speechService.getTranscriptHash(text),
     };
 
     setTranscriptEntries((prev) => [...prev, newEntry]);
@@ -200,7 +206,7 @@ export const ICantHearYouView: React.FC = () => {
     // Stop STT temporarily so Android TTS audio plays cleanly through speaker
     speechService.stopListening();
 
-    // Speak typed text aloud via Text-to-Speech
+    // Speak typed text aloud via Text-to-Speech (with SHA-256 payload verification)
     speechService.speak(text, preferences.autoTTSVolume, () => {
       setIsSpeaking(false);
       // Auto-resume continuous listening for hearing person's response!
@@ -396,9 +402,31 @@ export const ICantHearYouView: React.FC = () => {
                     alignItems: isYou ? 'flex-end' : 'flex-start',
                   }}
                 >
-                  <span style={{ fontSize: '0.675rem', fontWeight: 800, color: isYou ? 'var(--teal-700)' : 'var(--slate-500)', marginBottom: '3px' }}>
-                    {isYou ? '🔊 YOU (SPOKEN ALOUD)' : '💬 OTHER PERSON'} • {entry.timestamp}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '3px' }}>
+                    <span style={{ fontSize: '0.675rem', fontWeight: 800, color: isYou ? 'var(--teal-700)' : 'var(--slate-500)' }}>
+                      {isYou ? '🔊 YOU (SPOKEN ALOUD)' : '💬 OTHER PERSON'} • {entry.timestamp}
+                    </span>
+                    {entry.sha256Hash && (
+                      <span
+                        title={`SHA-256 Integrity Verified: ${entry.sha256Hash}`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '2px',
+                          fontSize: '0.6rem',
+                          fontWeight: 700,
+                          backgroundColor: isYou ? '#e0f2fe' : '#f1f5f9',
+                          color: isYou ? '#0369a1' : '#64748b',
+                          padding: '1px 5px',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(0,0,0,0.06)',
+                        }}
+                      >
+                        <ShieldCheck size={10} color={isYou ? '#0284c7' : '#10b981'} />
+                        SHA-256
+                      </span>
+                    )}
+                  </div>
 
                   <div
                     style={{

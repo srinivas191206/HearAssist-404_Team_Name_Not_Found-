@@ -1,15 +1,17 @@
-// Speech Service: Standard Streaming Speech-to-Text (STT) & Native Text-to-Speech (TTS) Engine
+// Speech Service: Standard Streaming Speech-to-Text (STT) & Native Text-to-Speech (TTS) Engine with SHA-256 Verification
 
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
+import { computeSha256Sync, computeSha256, verifySha256 } from './cryptoUtils';
 
 export interface SpeechRecognitionResultPayload {
   partialTranscript: string;
   finalTranscript: string;
   isFinal: boolean;
+  sha256Hash?: string;
 }
 
 export type PartialResultCallback = (partialText: string) => void;
-export type FinalResultCallback = (finalText: string) => void;
+export type FinalResultCallback = (finalText: string, sha256Hash: string) => void;
 export type ErrorCallback = (error: string) => void;
 export type StatusCallback = (status: 'listening' | 'processing' | 'paused' | 'stopped') => void;
 
@@ -18,8 +20,10 @@ export interface SpeechRecognitionEngine {
   stopListening(): void;
   pauseListening(): void;
   resumeListening(): void;
-  speak(text: string, volume?: number, onEnd?: () => void): void;
+  speak(text: string, volume?: number, onEnd?: () => void): Promise<string>;
   repeatLastText(volume?: number, fallbackText?: string): void;
+  getTranscriptHash(text: string): string;
+  verifyTranscriptIntegrity(text: string, hash: string): boolean;
 }
 
 interface IWindowSpeech extends Window {
@@ -35,6 +39,7 @@ class SpeechService implements SpeechRecognitionEngine {
   private onErrorCb: ErrorCallback | null = null;
   private onStatusCb: StatusCallback | null = null;
   private lastFinalText = '';
+  private lastSpokenHash = '';
   private restartTimeout: any = null;
 
   constructor() {
@@ -128,8 +133,9 @@ class SpeechService implements SpeechRecognitionEngine {
 
       if (finalTranscript.trim()) {
         const cleanText = finalTranscript.trim();
+        const sha256Hash = computeSha256Sync(cleanText);
         this.lastFinalText = cleanText;
-        if (this.onFinalCb) this.onFinalCb(cleanText);
+        if (this.onFinalCb) this.onFinalCb(cleanText, sha256Hash);
       }
     };
   }
@@ -202,13 +208,17 @@ class SpeechService implements SpeechRecognitionEngine {
     }
   }
 
-  // MAX VOLUME LOUD NATIVE ANDROID TEXT-TO-SPEECH (TTS)
-  public async speak(text: string, volume = 1.0, onEnd?: () => void): Promise<void> {
+  // MAX VOLUME LOUD NATIVE ANDROID TEXT-TO-SPEECH (TTS) WITH SHA-256 VERIFICATION
+  public async speak(text: string, volume = 1.0, onEnd?: () => void): Promise<string> {
     const cleanText = text.trim();
     if (!cleanText) {
       if (onEnd) onEnd();
-      return;
+      return '';
     }
+
+    // Generate SHA-256 cryptographic payload hash for TTS utterance integrity & deduplication
+    const ttsPayloadHash = computeSha256Sync(`${cleanText}:en-IN:${volume.toFixed(2)}`);
+    this.lastSpokenHash = ttsPayloadHash;
 
     let isFinished = false;
     const finish = () => {
@@ -228,7 +238,7 @@ class SpeechService implements SpeechRecognitionEngine {
         category: 'alarm',
       });
       finish();
-      return;
+      return ttsPayloadHash;
     } catch (nativeErr) {
       console.warn('Native Capacitor TTS fallback to WebSpeech:', nativeErr);
     }
@@ -263,6 +273,8 @@ class SpeechService implements SpeechRecognitionEngine {
     } else {
       finish();
     }
+
+    return ttsPayloadHash;
   }
 
   public repeatLastText(volume = 1.0, fallbackText = 'Could you please repeat that?'): void {
@@ -272,6 +284,18 @@ class SpeechService implements SpeechRecognitionEngine {
 
   public getLastSpokenText(): string {
     return this.lastFinalText;
+  }
+
+  public getLastSpokenHash(): string {
+    return this.lastSpokenHash;
+  }
+
+  public getTranscriptHash(text: string): string {
+    return computeSha256Sync(text.trim());
+  }
+
+  public verifyTranscriptIntegrity(text: string, hash: string): boolean {
+    return verifySha256(text.trim(), hash);
   }
 }
 

@@ -134,6 +134,7 @@ export interface TranscriptEntry {
   text: string;
   timestamp: string;
   isFinal: boolean;
+  sha256Hash?: string; // Cryptographic SHA-256 integrity hash for STT and TTS transcripts
 }
 
 export interface AppPermissions {
